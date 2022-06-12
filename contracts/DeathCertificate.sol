@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity >=0.8.0 <0.9.0;
 
 import "./EtherWill.sol";
 
 contract DeathCertificate {
     struct Person {
         string NIN; // EGN in Bulgaria
+        // more fields such as name, lastname, email can be added in the future
     }
 
     struct Document {
@@ -23,12 +24,12 @@ contract DeathCertificate {
 
     mapping(string => bool) private deadPeople;
 
-    // The event for the event listener
     event Death(Document document);
 
     constructor(address payable _addr) {
         admin = msg.sender;
         etherWillAddr = EtherWill(_addr);
+        etherWillAddr.setDeathSertificateAddr(address(this));
     }
 
     modifier isAdmin() {
@@ -45,12 +46,22 @@ contract DeathCertificate {
         certifiedInstitustions[institution] = true;
     }
 
-    function announceDeath(Document memory document) public isCertifiedInstitution {
+    // How can we send data from web3.js, so we can use Document as a parameter type here
+    function announceDeath(
+        string memory announcerNIN,
+        string memory deadNIN,
+        string memory doctorNIN
+    ) public isCertifiedInstitution {
+        Person memory announcer = Person({NIN: announcerNIN});
+        Person memory dead = Person({NIN: deadNIN });
+        Person memory doctor = Person({NIN: doctorNIN});
+    
+        Document memory document = Document({ announcer: announcer, dead: dead, doctor: doctor });
         require(!deadPeople[document.announcer.NIN] && !deadPeople[document.dead.NIN], "Invalid document");
         deadPeople[document.dead.NIN] = true;
 
         emit Death(document);
+        // call Wills smart contract to execute the wills of the dead person
         etherWillAddr.executeWills(document.dead.NIN);
-        // call Wills smart contract
     }
 }

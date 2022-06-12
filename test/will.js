@@ -1,6 +1,3 @@
-const { default: Web3 } = require("web3");
-const { isTopic } = require("web3-utils");
-
 var EtherWill = artifacts.require("./EtherWill.sol");
 var DeathCertificate = artifacts.require("./DeathCertificate.sol")
 
@@ -24,8 +21,8 @@ contract("DeathCertificate", function(accounts) {
                 console.log('Is 1234 registered: ' + await instance.amIReggistered('1234'))
                 await instance.createWill('1234', [{to: accounts[1], amount:3}], {from: accounts[0], value: 3000000000000000000} )
                 console.log(await instance.getMyWill({from: accounts[0]}));
-                await instance.addCertifiedMiddleware(ii.address);
-                // await instance.addCertifiedMiddleware(accounts[0]);
+                // await instance.setDeathSertificateAddr(ii.address);
+                // await instance.setDeathSertificateAddr(accounts[0]);
                 // await instance.executeWills('1234');
                 await ii.addCertifiedInstitution(accounts[0]);
                 await ii.announceDeath({announcer: {NIN: '4321'}, dead: {NIN: '1234'}, doctor: {NIN: '0000'}})

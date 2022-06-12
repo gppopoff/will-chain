@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity >=0.8.0 <0.9.0;
 
 contract EtherWill {
 
@@ -11,23 +11,23 @@ contract EtherWill {
 
     address private admin;
 
-    address private certifiedMiddlewares; //address of DeathCertificate contract
+    address private deathCertificateAddr;
 
-    mapping(address => Clause[]) /*private*/ public wills;
+    mapping(address => Clause[]) private wills;
 
-    mapping(string => address) /*private*/ public accounts;
+    mapping(string => address) private accounts;
 
     event ExecutedWill(address testator, Clause[] clauses);
 
     event Log(string func, address sender, uint value); //For logging money
 
     modifier isAdmin() {
-        require(msg.sender == admin, "Caller is not admin!");
+        require(tx.origin == admin, "Caller is not admin!");
         _;
     }
 
-    modifier isCertifiedMiddleware() {
-        require(certifiedMiddlewares == msg.sender, "Caller is not certified Middleware!");
+    modifier isDeathCertificateContract() {
+        require(deathCertificateAddr == msg.sender, "Caller is not certified Middleware!");
         _;
     }
 
@@ -44,19 +44,27 @@ contract EtherWill {
         emit Log("receive", msg.sender, msg.value);
     }
 
+    function getWills(address addr) public view returns(Clause[] memory) {
+        return wills[addr];
+    }
+
+    function getAccount(string memory NIN) public view returns(address) {
+        return accounts[NIN];
+    }
 
     function getAdmin() public view returns(address) {
         return admin;
     }
 
-    function getCertifiedMiddlewares() public view returns(address) {
-        return certifiedMiddlewares;
+    function getDeathCertificateAddr() public view returns(address) {
+        return deathCertificateAddr;
     }
 
-    // is it ok??? 
+    // used for testing purposes
     function amIReggistered(string memory personalNIN) public view returns(bool) {
         return accounts[personalNIN] != address(0);
     }
+
     // Only the Dapp will call it
     function register(string memory personalNIN) public {
         require(accounts[personalNIN] == address(0), "Allready registered!");
@@ -64,8 +72,8 @@ contract EtherWill {
         accounts[personalNIN] = msg.sender;
     }
 
-    function addCertifiedMiddleware(address middleware) public isAdmin {
-        certifiedMiddlewares = middleware;
+    function setDeathSertificateAddr(address addr) public isAdmin {
+        deathCertificateAddr = addr;
     }
 
     function deleteWillTo(string memory personalNIN, address to) public payable isRegistered(personalNIN) {
@@ -104,10 +112,6 @@ contract EtherWill {
         require(msg.value >= willAmount * (1 ether), "Not enough ethers!");
 
         // Lock the will ethers in the smart contract
-        // Check if without this is ok
-        (bool sent, bytes memory data) = address(this).call{value: msg.value}("");
-        require(sent, "Failed to send Ether");
-
         // Add the will clauses
         for (uint i = 0; i < clauses.length; i++) {
             wills[msg.sender].push(clauses[i]);
@@ -115,10 +119,11 @@ contract EtherWill {
     }
 
     // Executes the wills of the dead person if they have an account
-    // Triggered by the event listener  / other smart contract /
-    function executeWills(string memory personalNIN) public payable isCertifiedMiddleware isRegistered(personalNIN) {
+    // Triggered by DeathSertificate contract
+    function executeWills(string memory personalNIN) public payable isDeathCertificateContract isRegistered(personalNIN) {
         Clause[] memory testatorWills = wills[accounts[personalNIN]];
 
+        // This can be optimized through grouping the wills by the receiver and executing them
         for (uint i = 0; i < testatorWills.length; i++) {
             payable(testatorWills[i].to).transfer(testatorWills[i].amount * (1 ether));
         }
