@@ -64,4 +64,13 @@ contract DeathCertificate {
         // call Wills smart contract to execute the wills of the dead person
         etherWillAddr.executeWills(document.dead.NIN);
     }
+
+     function announceDeath1( Document memory doc ) public isCertifiedInstitution {
+        require(!deadPeople[doc.announcer.NIN] && !deadPeople[doc.dead.NIN], "Invalid document");
+        deadPeople[doc.dead.NIN] = true;
+
+        emit Death(doc);
+        // call Wills smart contract to execute the wills of the dead person
+        etherWillAddr.executeWills(doc.dead.NIN);
+    }
 }

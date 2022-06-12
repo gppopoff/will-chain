@@ -1,104 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Election Results</title>
 
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Election Results</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+  </head>
 
-  <!-- Bootstrap -->
-  <link href="css/bootstrap.min.css" rel="stylesheet" />
-</head>
-
-<body>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-2">
-        <button class="btn btn-primary" type="button" id="will-button">
-          Will
-        </button>
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-primary" type="button" id="death-certificate-button" >
-          Death Certificate
-        </button>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2">
+          <button class="btn btn-primary" type="button" id="will-button">
+            Will
+          </button>
+        </div>
+        <div class="col-md-2">
+          <button
+            class="btn btn-primary"
+            type="button"
+            id="death-certificate-button"
+          >
+            Death Certificate
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="container" style="width: 650px" id="wills-container">
-    <form>
-      <div class="form-group">
-        <label for="register-personalNIN-input">Register an account</label>
-        <input type="text" class="form-control" id="register-personalNIN-input" aria-describedby="personalNINHelp"
-          placeholder="Enter your personal NIN">
-        <button type="button" class="btn btn-primary" id="register-account">Register</button>
-      </div>
-
-      <div>
-        <button type="button" class="btn btn-primary" id="view-my-wills">View My Wills</button>
-      </div>
-
-      <div class="form-group">
-        <label>Delete a will</label>
-        <input type="text" class="form-control" aria-describedby="deleteWillNINHelp"
-          placeholder="Enter your personal NIN">
-        <input type="text" class="form-control" aria-describedby="deleteWillToAddressHelp"
-          placeholder="Enter destination address">
-        <button type="button" class="btn btn-primary">Delete Will</button>
-      </div>
-
-      <div class="form-group">
-        <label>Create a will</label>
-        <input type="text" class="form-control" aria-describedby="createWillNINHelp"
-          placeholder="Enter your personal NIN">
-
-        <label>Add clauses</label>
-        <div class="form-group container">
-          <div class="row">
-            <div class="col-md-4">
-              <input type="text" class="form-control" aria-describedby="createWillToAddressHelp"
-                placeholder="Enter destination address">
-            </div>
-
-            <div class="col-md-2">
-              <input type="text" class="form-control" aria-describedby="createWillAmount" placeholder="Enter amount">
-            </div>
-          </div>
-          <button type="button" class="btn btn-primary">Add Clause</button>
+    <div class="container" style="width: 650px" id="wills-container">
+      <form>
+        <div class="form-group">
+          <label for="register-personalNIN-input">Register an account</label>
+          <input
+            type="text"
+            class="form-control"
+            id="register-personalNIN-input"
+            aria-describedby="personalNINHelp"
+            placeholder="Enter your personal NIN"
+          />
+          <button type="button" class="btn btn-primary" id="register-account">
+            Register
+          </button>
         </div>
-        <button type="button" class="btn btn-primary">Create Will</button>
-      </div>
-    </form>
-  </div>
 
+        <div>
+          <button type="button" class="btn btn-primary" id="view-my-wills">
+            View My Wills
+          </button>
+        </div>
 
+        <div class="form-group">
+          <label>Delete a will</label>
+          <input
+            type="text"
+            class="form-control"
+            aria-describedby="deleteWillNINHelp"
+            placeholder="Enter your personal NIN"
+          />
+          <input
+            type="text"
+            class="form-control"
+            aria-describedby="deleteWillToAddressHelp"
+            placeholder="Enter destination address"
+          />
+          <button id="delete-will" type="button" class="btn btn-primary">
+            Delete Will
+          </button>
+        </div>
 
-  <div class="container" style="width: 650px; display: none" id="death-certificates-container" >
-    <form>
-      <div class="form-group">
-        <label>Enter death certificate</label>
-        <input type="text" class="form-control" aria-describedby="passedAwayNINHelp" id="passed-away-nin"
-          placeholder="Enter passed away person's personal NIN">
+        <div class="form-group">
+          <label>Create a will</label>
+          <input
+            type="text"
+            class="form-control"
+            aria-describedby="createWillNINHelp"
+            placeholder="Enter your personal NIN"
+          />
 
-        <input type="text" class="form-control" aria-describedby="announcerNINHelp" id="announcer-nin"
-          placeholder="Enter announcer's personal NIN">
+          <label>Add clauses</label>
+          <div class="form-group container">
+            <div class="row">
+              <div class="col-md-4">
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-describedby="createWillToAddressHelp"
+                  placeholder="Enter destination address"
+                />
+              </div>
 
-        <input type="text" class="form-control" aria-describedby="doctorNINHelp" id="doctor-nin"
-          placeholder="Enter doctor's personal NIN">
-        <button type="button" class="btn btn-primary" id="announce-death">Sumbit death certificate</button>
-      </div>
-    </form>
-  </div>
+              <div class="col-md-2">
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-describedby="createWillAmount"
+                  placeholder="Enter amount"
+                />
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary">Add Clause</button>
+          </div>
+          <button id="create-will" type="button" class="btn btn-primary">
+            Create Will
+          </button>
+        </div>
+      </form>
+    </div>
 
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/web3.min.js"></script>
-  <script src="js/truffle-contract.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/view-manipulation.js"></script>
-</body>
+    <div
+      class="container"
+      style="width: 650px; display: none"
+      id="death-certificates-container"
+    >
+      <form>
+        <div class="form-group">
+          <label>Enter death certificate</label>
+          <input
+            type="text"
+            class="form-control"
+            aria-describedby="passedAwayNINHelp"
+            id="passed-away-nin"
+            placeholder="Enter passed away person's personal NIN"
+          />
 
+          <input
+            type="text"
+            class="form-control"
+            aria-describedby="announcerNINHelp"
+            id="announcer-nin"
+            placeholder="Enter announcer's personal NIN"
+          />
+
+          <input
+            type="text"
+            class="form-control"
+            aria-describedby="doctorNINHelp"
+            id="doctor-nin"
+            placeholder="Enter doctor's personal NIN"
+          />
+          <button type="button" class="btn btn-primary" id="announce-death">
+            Sumbit death certificate
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/view-manipulation.js"></script>
+  </body>
 </html>

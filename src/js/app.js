@@ -98,10 +98,35 @@ App = {
   
   viewMyWills: function() {
     App.contracts.EtherWill.deployed().then(async function (instance) {
-      const a = await instance.getMyWill({ from: App.account });
-      console.log("RES", a.toString(10))
+      const a = await instance.getMyWillTo({ from: App.account });
+      const b = await instance.getMyWillAmount({ from: App.account });
+      console.log("RES", a)
+      for(let i = 0; i < b.length; i++) { 
+        console.log("RES2", b[i].toString(10))
+      }
+      
     });
   },
+
+  createWill: function() {
+    App.contracts.EtherWill.deployed().then(async function(instance) {
+      console.log(typeof App.account, typeof '0x00fDa8dd87bA1314450642E3cAE66ddDDeAA6771' )
+        await instance.createWillUI("1234", ['0x00fDa8dd87bA1314450642E3cAE66ddDDeAA6771'], [3], {from: App.account, value: 3000000000000000000});
+    })
+  },
+
+  deleteWill: function() {
+    App.contracts.EtherWill.deployed().then(async function(instance) {
+     (await web3.eth.getBalance(instance.address, function(error , result){
+      if(!error)
+          console.log(result.toString(10));
+      else
+          console.log(error.code)
+     }));
+
+      await instance.deleteWillTo("1234", '0x00fDa8dd87bA1314450642E3cAE66ddDDeAA6771', {from: App.account, gas: 100000});
+    })
+  }
 
   
 
@@ -170,6 +195,8 @@ function addEventListeners() {
   $('#announce-death').click(App.announceDeath)
   $('#register-account').click(App.registerAccount)
   $('#view-my-wills').click(App.viewMyWills)
+  $('#create-will').click(App.createWill)
+  $('#delete-will').click(App.deleteWill)
 }
 
 $(function () {

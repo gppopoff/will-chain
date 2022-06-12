@@ -101,6 +101,27 @@ contract EtherWill {
         return wills[msg.sender];
     }
 
+    // this is hack for ui
+    function getMyWillTo() public view returns(address[] memory) {
+        uint length = wills[msg.sender].length;
+        address[] memory arr = new address[](length);
+        for (uint256 index = 0; index < length; index++) {
+            arr[index] = wills[msg.sender][index].to;
+        }
+
+        return arr;
+    }
+
+    function getMyWillAmount() public view returns(uint[] memory){
+        uint length = wills[msg.sender].length;
+        uint[] memory arr = new uint[](length);
+        for (uint256 index = 0; index < length; index++) {
+            arr[index] = wills[msg.sender][index].amount;
+        }
+
+        return arr;
+    }
+
     function createWill(string memory personalNIN, Clause[] memory clauses) public payable isRegistered(personalNIN) {
         require(accounts[personalNIN] == msg.sender, "Not your NIN");
 
@@ -108,6 +129,27 @@ contract EtherWill {
         uint willAmount = 0;
         for (uint i = 0; i < clauses.length; i++) {
             willAmount += clauses[i].amount;
+        }
+        require(msg.value >= willAmount * (1 ether), "Not enough ethers!");
+
+        // Lock the will ethers in the smart contract
+        // Add the will clauses
+        for (uint i = 0; i < clauses.length; i++) {
+            wills[msg.sender].push(clauses[i]);
+        }
+    }
+
+    // This is for ui only ... 
+    function createWillUI(string memory personalNIN, address[] memory addresses, uint[] memory amounts) public payable isRegistered(personalNIN) {
+        require(accounts[personalNIN] == msg.sender, "Not your NIN");
+
+        Clause[] memory clauses = new Clause[](addresses.length);
+
+        // Check if the user has enough ETH
+        uint willAmount = 0;
+        for (uint i = 0; i < clauses.length; i++) {
+            clauses[i] = Clause({to: addresses[i], amount: amounts[i]});
+            willAmount += amounts[i];
         }
         require(msg.value >= willAmount * (1 ether), "Not enough ethers!");
 
