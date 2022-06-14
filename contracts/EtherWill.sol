@@ -86,11 +86,8 @@ contract EtherWill {
             if (wills[msg.sender][i].to == to) {
                 amountToReturn += wills[msg.sender][i].amount;
 
-                uint length = wills[msg.sender].length;
-                // Delete the clause
-                wills[msg.sender][i] = wills[msg.sender][length - 1];
-                wills[msg.sender].pop();
-                i--; // To check if the last element also satisfy the removal condition
+                // There is a problem if pop elements form array when they drop down to 1 so we just make amounts 0
+                wills[msg.sender][i].amount = 0;
             }
         }
         // Not sure if we need to charge the user for the gas
@@ -163,13 +160,16 @@ contract EtherWill {
     // Executes the wills of the dead person if they have an account
     // Triggered by DeathSertificate contract
     function executeWills(string memory personalNIN) public payable isDeathCertificateContract isRegistered(personalNIN) {
-        Clause[] memory testatorWills = wills[accounts[personalNIN]];
-
         // This can be optimized through grouping the wills by the receiver and executing them
-        for (uint i = 0; i < testatorWills.length; i++) {
-            payable(testatorWills[i].to).transfer(testatorWills[i].amount * (1 ether));
+        for (uint i = 0; i < wills[accounts[personalNIN]].length; i++) {
+            if (wills[accounts[personalNIN]][i].amount > 0) {
+                payable(wills[accounts[personalNIN]][i].to).transfer(wills[accounts[personalNIN]][i].amount * (1 ether));
+            }
+
+            // Here we set it to zero because if we remove them - there is an VM error 
+            wills[accounts[personalNIN]][i].amount = 0;       
         }
 
-        emit ExecutedWill(accounts[personalNIN], testatorWills);
+        emit ExecutedWill(accounts[personalNIN], wills[accounts[personalNIN]]);
     }
 }
