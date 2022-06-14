@@ -104,30 +104,26 @@ App = {
       for(let i = 0; i < b.length; i++) { 
         console.log("RES2", b[i].toString(10))
       }
-      
     });
   },
 
   createWill: function() {
     App.contracts.EtherWill.deployed().then(async function(instance) {
-      console.log(typeof App.account, typeof '0x00fDa8dd87bA1314450642E3cAE66ddDDeAA6771' )
-        await instance.createWillUI("1234", ['0x00fDa8dd87bA1314450642E3cAE66ddDDeAA6771'], [3], {from: App.account, value: 3000000000000000000});
+      await instance.createWillUI("1234", ['0xE221f9c0587e587C94875DDEE21C4F17655E76aD'], [3], {from: App.account, value: 3000000000000000000});
     })
   },
 
   deleteWill: function() {
     App.contracts.EtherWill.deployed().then(async function(instance) {
-     (await web3.eth.getBalance(instance.address, function(error , result){
-      if(!error)
-          console.log(result.toString(10));
-      else
-          console.log(error.code)
-     }));
-
-      await instance.deleteWillTo("1234", '0x00fDa8dd87bA1314450642E3cAE66ddDDeAA6771', {from: App.account, gas: 100000});
+      await instance.deleteWillTo("1234", '0xE221f9c0587e587C94875DDEE21C4F17655E76aD', {from: App.account, gas: 6500000});
     })
-  }
+  },
 
+  addInstitutionAddr: function() {
+    App.contracts.DeathCertificate.deployed().then(async function(instance) {
+      await instance.addCertifiedInstitution(App.account, {from: App.account}); //todo add field value
+    });
+  },
   
 
   //   listenForEvents: function() {
@@ -197,6 +193,7 @@ function addEventListeners() {
   $('#view-my-wills').click(App.viewMyWills)
   $('#create-will').click(App.createWill)
   $('#delete-will').click(App.deleteWill)
+  $('#add-institution-addr').click(App.addInstitutionAddr)
 }
 
 $(function () {
