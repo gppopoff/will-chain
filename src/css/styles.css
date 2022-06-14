@@ -1,0 +1,43 @@
+.nav-container {
+  width: 50%;
+  margin: 5% auto;
+}
+
+.custom-nav {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-button {
+  width: 50%;
+  text-align: center;
+  font-size: 24px
+}
+
+input {
+  margin-bottom: 8px;
+}
+
+.custom-form-group {
+  padding-bottom: 32px;
+  border-bottom: solid 1px #113d66;
+}
+
+#view-my-wills {
+  margin-bottom: 24px;
+  margin-top: 12px;
+}
+
+#delete-clause-button {
+  background-color: rgb(172, 66, 66);
+  color: white;
+  font-weight: 800;
+  padding: 0;
+  width: 34px;
+  height: 34px;
+}
+
+#create-will {
+  margin-top: 16px;
+  width: 180px;
+}
