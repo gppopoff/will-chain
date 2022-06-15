@@ -58,7 +58,7 @@ App = {
     const doctorNIN = $('#doctor-nin').val();
 
     App.contracts.DeathCertificate.deployed().then(function (instance) {
-      return instance.announceDeath(announcerNIN, passedAawayNIN, doctorNIN, { from: App.account });
+      return instance.announceDeathUI(announcerNIN, passedAawayNIN, doctorNIN, { from: App.account });
     });
   },
 
@@ -132,7 +132,7 @@ App = {
     const personalNIN = $('#delete-personal-nin').val();
     const address = $('#delete-address').val();
     App.contracts.EtherWill.deployed().then(async function (instance) {
-      await instance.deleteWillTo(personalNIN, address, { from: App.account, gas: 6500000 });
+      await instance.deleteWillTo(personalNIN, address, { from: App.account });
     })
   },
 

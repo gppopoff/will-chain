@@ -44,6 +44,7 @@ contract EtherWill {
         emit Log("receive", msg.sender, msg.value);
     }
 
+    //Getters ...
     function getWills(address addr) public view returns(Clause[] memory) {
         return wills[addr];
     }
@@ -65,7 +66,7 @@ contract EtherWill {
         return accounts[personalNIN] != address(0);
     }
 
-    // Only the Dapp will call it
+    // Registers a user
     function register(string memory personalNIN) public {
         require(accounts[personalNIN] == address(0), "Allready registered!");
 
@@ -76,6 +77,8 @@ contract EtherWill {
         deathCertificateAddr = addr;
     }
 
+    // Deletes all of the sender's wills to specific address
+    // Accepts sender's personal NIN and destination address
     function deleteWillTo(string memory personalNIN, address to) public payable isRegistered(personalNIN) {
         require(accounts[personalNIN] == msg.sender, "Not your NIN");
 
@@ -94,11 +97,12 @@ contract EtherWill {
         payable(msg.sender).transfer(amountToReturn * (1 ether));
     }
 
+    // Returns the wills of the sender
     function getMyWill() public view returns(Clause[] memory) {
         return wills[msg.sender];
     }
 
-    // this is hack for ui
+    // UI version - since we did not find a way to receive structs in web3
     function getMyWillTo() public view returns(address[] memory) {
         uint length = wills[msg.sender].length;
         address[] memory arr = new address[](length);
@@ -109,6 +113,7 @@ contract EtherWill {
         return arr;
     }
 
+    // UI version - since we did not find a way to receive structs in web3
     function getMyWillAmount() public view returns(uint[] memory){
         uint length = wills[msg.sender].length;
         uint[] memory arr = new uint[](length);
@@ -119,6 +124,8 @@ contract EtherWill {
         return arr;
     }
 
+    // Create a will with several clauses
+    // Accept sender's personal NIN and clauses which contain destination address and amount
     function createWill(string memory personalNIN, Clause[] memory clauses) public payable isRegistered(personalNIN) {
         require(accounts[personalNIN] == msg.sender, "Not your NIN");
 
@@ -136,7 +143,7 @@ contract EtherWill {
         }
     }
 
-    // This is for ui only ... 
+    // UI version - since we did not find a way to send structs from web3 
     function createWillUI(string memory personalNIN, address[] memory addresses, uint[] memory amounts) public payable isRegistered(personalNIN) {
         require(accounts[personalNIN] == msg.sender, "Not your NIN");
 

@@ -35,7 +35,7 @@ contract("DeathCertificate", function(accounts) {
                 // await instance.setDeathSertificateAddr(accounts[0]);
                 // await instance.executeWills('1234');
                 await ii.addCertifiedInstitution(accounts[0]);
-                await ii.announceDeath1({announcer: {NIN: '4321'}, dead: {NIN: '1234'}, doctor: {NIN: '0000'}})
+                await ii.announceDeath({announcer: {NIN: '4321'}, dead: {NIN: '1234'}, doctor: {NIN: '0000'}})
 
                 
                 console.log(await instance.getMyWill({from: accounts[0]}));

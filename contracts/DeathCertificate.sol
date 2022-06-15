@@ -26,10 +26,16 @@ contract DeathCertificate {
 
     event Death(Document document);
 
+    event Log(string func, address sender, uint value); //For logging money
+
     constructor(address payable _addr) {
         admin = msg.sender;
         etherWillAddr = EtherWill(_addr);
         etherWillAddr.setDeathSertificateAddr(address(this));
+    }
+
+    receive() external payable {
+        emit Log("receive", msg.sender, msg.value);
     }
 
     modifier isAdmin() {
@@ -46,8 +52,18 @@ contract DeathCertificate {
         certifiedInstitustions[institution] = true;
     }
 
-    // How can we send data from web3.js, so we can use Document as a parameter type here
-    function announceDeath(
+    // Acceopts death certificate and announce EtherWill SC
+    function announceDeath( Document memory doc ) public isCertifiedInstitution {
+        require(!deadPeople[doc.announcer.NIN] && !deadPeople[doc.dead.NIN], "Invalid document");
+        deadPeople[doc.dead.NIN] = true;
+
+        emit Death(doc);
+        // call Wills smart contract to execute the wills of the dead person
+        etherWillAddr.executeWills(doc.dead.NIN);
+    }
+
+    // UI version - since we did not find a way to send structs from web3
+    function announceDeathUI(
         string memory announcerNIN,
         string memory deadNIN,
         string memory doctorNIN
@@ -63,14 +79,5 @@ contract DeathCertificate {
         emit Death(document);
         // call Wills smart contract to execute the wills of the dead person
         etherWillAddr.executeWills(document.dead.NIN);
-    }
-
-     function announceDeath1( Document memory doc ) public isCertifiedInstitution {
-        require(!deadPeople[doc.announcer.NIN] && !deadPeople[doc.dead.NIN], "Invalid document");
-        deadPeople[doc.dead.NIN] = true;
-
-        emit Death(doc);
-        // call Wills smart contract to execute the wills of the dead person
-        etherWillAddr.executeWills(doc.dead.NIN);
     }
 }
