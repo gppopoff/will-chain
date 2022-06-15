@@ -108,83 +108,30 @@ App = {
   },
 
   createWill: function() {
+    const personalNIN = $('#create-personal-nin').val();
+    const address0 = $('#destination-addr-0').val();
+    const amount0 = $('#amount-0').val();
+
     App.contracts.EtherWill.deployed().then(async function(instance) {
-      await instance.createWillUI("1234", ['0xE221f9c0587e587C94875DDEE21C4F17655E76aD'], [3], {from: App.account, value: 3000000000000000000});
+      await instance.createWillUI(personalNIN, [address0], [amount0], {from: App.account, value: amount0 * 1000000000000000000});
     })
   },
 
   deleteWill: function() {
+    const personalNIN = $('#delete-personal-nin').val();
+    const address = $('#delete-address').val();
     App.contracts.EtherWill.deployed().then(async function(instance) {
-      await instance.deleteWillTo("1234", '0xE221f9c0587e587C94875DDEE21C4F17655E76aD', {from: App.account, gas: 6500000});
+      await instance.deleteWillTo(personalNIN, address, {from: App.account, gas: 6500000});
     })
   },
 
   addInstitutionAddr: function() {
+    const address = $('#certified-institution-addr-imput').val()
     App.contracts.DeathCertificate.deployed().then(async function(instance) {
-      await instance.addCertifiedInstitution(App.account, {from: App.account}); //todo add field value
+      await instance.addCertifiedInstitution(address, {from: App.account}); //todo add field value
     });
   },
   
-
-  //   listenForEvents: function() {
-  //     App.contracts.Election.deployed().then(function(instance) {
-  //       instance.votedEvent({}, {
-  //         fromBlock: 0,
-  //         toBlock: 'latest'
-  //       }).watch(function(error, event) {
-  //         console.log("event triggered", event)
-  //         // Reload when a new vote is recorded
-  //         App.render();
-  //       });
-  //     });
-  //   },
-
-  // render: function () {
-  //   var electionInstance;
-  //   var loader = $("#loader");
-  //   var content = $("#content");
-
-  //   loader.show();
-  //   content.hide();
-
-  //   // Load contract data
-  //   App.contracts.Election.deployed().then(function (instance) {
-  //     electionInstance = instance;
-  //     return electionInstance.candidatesCount();
-  //   }).then(function (candidatesCount) {
-  //     var candidatesResults = $("#candidatesResults");
-  //     candidatesResults.empty();
-
-  //     var candidatesSelect = $('#candidatesSelect');
-  //     candidatesSelect.empty();
-
-  //     for (var i = 1; i <= candidatesCount; i++) {
-  //       electionInstance.candidates(i).then(function (candidate) {
-  //         var id = candidate[0];
-  //         var name = candidate[1];
-  //         var voteCount = candidate[2];
-
-  //         // Render candidate Result
-  //         var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
-  //         candidatesResults.append(candidateTemplate);
-
-  //         // Render candidate ballot option
-  //         var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
-  //         candidatesSelect.append(candidateOption);
-  //       });
-  //     }
-  //     return electionInstance.voters(App.account);
-  //   }).then(function (hasVoted) {
-  //     // Do not allow a user to vote
-  //     if (hasVoted) {
-  //       $('form').hide();
-  //     }
-  //     loader.hide();
-  //     content.show();
-  //   }).catch(function (error) {
-  //     console.warn(error);
-  //   });
-  // }
 };
 
 function addEventListeners() {
