@@ -20,19 +20,6 @@ App = {
     return App.initContracts();
   },
 
-  //   initContract: function() {
-  //     $.getJSON("Election.json", function(election) {
-  //       // Instantiate a new truffle contract from the artifact
-  //       App.contracts.Election = TruffleContract(election);
-  //       // Connect provider to interact with contract
-  //       App.contracts.Election.setProvider(App.web3Provider);
-
-  //       App.listenForEvents();
-
-  //       return App.render();
-  //     });
-  //   },
-
   initContracts: function () {
     $.getJSON("DeathCertificate.json", function (certificate) {
       // Instantiate a new truffle contract from the artifact
@@ -65,20 +52,7 @@ App = {
     });
   },
 
-  //   castVote: function() {
-  //     var candidateId = $('#candidatesSelect').val();
-  //     App.contracts.Election.deployed().then(function(instance) {
-  //       return instance.vote(candidateId, { from: App.account });
-  //     }).then(function(result) {
-  //       // Wait for votes to update
-  //       $("#content").hide();
-  //       $("#loader").show();
-  //     }).catch(function(err) {
-  //       console.error(err);
-  //     });
-  //   },
-
-  announceDeath: function() {
+  announceDeath: function () {
     const passedAawayNIN = $('#passed-away-nin').val();
     const announcerNIN = $('#announcer-nin').val();
     const doctorNIN = $('#doctor-nin').val();
@@ -88,50 +62,87 @@ App = {
     });
   },
 
-  registerAccount: function() {
+  registerAccount: function () {
     const nin = $('#register-personalNIN-input').val();
 
     App.contracts.EtherWill.deployed().then(function (instance) {
       return instance.register(nin, { from: App.account });
     });
   },
-  
-  viewMyWills: function() {
+
+  viewMyWills: function () {
     App.contracts.EtherWill.deployed().then(async function (instance) {
-      const a = await instance.getMyWillTo({ from: App.account });
-      const b = await instance.getMyWillAmount({ from: App.account });
-      console.log("RES", a)
-      for(let i = 0; i < b.length; i++) { 
-        console.log("RES2", b[i].toString(10))
-      }
+      const targets = await instance.getMyWillTo({ from: App.account });
+      const amounts = await instance.getMyWillAmount({ from: App.account });
+      
+      const wills = targets.map((target, index) => {
+        const amount = amounts[index].toString(10);
+        console.log("AMOUNT", amount);
+        return amount > 0 ? { target, amount } : null;
+      }).filter(will => will !== null);
+
+      const willsContainer = document.getElementById('wills-list-container');
+
+      willsContainer.innerHTML = '';
+
+      wills.forEach(will => {
+        const willElement = document.createElement('div');
+        willElement.classList.add('row');
+
+        const valueElement = document.createElement('div');
+        const targetElement = document.createElement('div');
+
+        targetElement.classList.add('col-md-6', 'will-content');
+        valueElement.classList.add('col-md-2', 'will-content');
+
+        targetElement.textContent = `to: ${will.target}`;
+        valueElement.textContent = `value: ${will.amount} ETH`;
+
+        willElement.appendChild(targetElement);
+        willElement.appendChild(valueElement);
+        willsContainer.appendChild(willElement)
+      })
     });
   },
 
-  createWill: function() {
-    const personalNIN = $('#create-personal-nin').val();
-    const address0 = $('#destination-addr-0').val();
-    const amount0 = $('#amount-0').val();
+  createWill: function () {
+    const clauseRows = document.getElementsByClassName('clause-row');
 
-    App.contracts.EtherWill.deployed().then(async function(instance) {
-      await instance.createWillUI(personalNIN, [address0], [amount0], {from: App.account, value: amount0 * 1000000000000000000});
+    const targets = [...clauseRows].map(row => row.children[0].firstChild.value);
+    const values = [...clauseRows].map(row => parseFloat(row.children[1].firstChild.value));
+
+
+    const totalAmount = values.reduce((sum, amount) => {
+      console.log("AMOUNT", amount)
+
+      sum += amount;
+      return sum
+    }, 0);
+
+    console.log("TOTAL AMOUNT", totalAmount);
+
+    const personalNIN = $('#create-personal-nin').val();
+
+    App.contracts.EtherWill.deployed().then(async function (instance) {
+      await instance.createWillUI(personalNIN, targets , values, { from: App.account, value: totalAmount * 1000000000000000000 });
     })
   },
 
-  deleteWill: function() {
+  deleteWill: function () {
     const personalNIN = $('#delete-personal-nin').val();
     const address = $('#delete-address').val();
-    App.contracts.EtherWill.deployed().then(async function(instance) {
-      await instance.deleteWillTo(personalNIN, address, {from: App.account, gas: 6500000});
+    App.contracts.EtherWill.deployed().then(async function (instance) {
+      await instance.deleteWillTo(personalNIN, address, { from: App.account, gas: 6500000 });
     })
   },
 
-  addInstitutionAddr: function() {
+  addInstitutionAddr: function () {
     const address = $('#certified-institution-addr-imput').val()
-    App.contracts.DeathCertificate.deployed().then(async function(instance) {
-      await instance.addCertifiedInstitution(address, {from: App.account}); //todo add field value
+    App.contracts.DeathCertificate.deployed().then(async function (instance) {
+      await instance.addCertifiedInstitution(address, { from: App.account }); //todo add field value
     });
   },
-  
+
 };
 
 function addEventListeners() {

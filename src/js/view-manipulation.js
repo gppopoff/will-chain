@@ -22,9 +22,9 @@ function handleAddClauseButtonClick() {
   const col2 = wrapInDiv(createInput('Enter amount'), 'col-md-2');
 
   const deleteClauseButton = configureDeleteClauseButton();
-  
+
   const row = document.createElement('div');
-  row.classList.add('row');
+  row.classList.add('clause-row', 'row');
 
   row.appendChild(col1);
   row.appendChild(col2);
@@ -38,8 +38,25 @@ document.getElementById('death-certificate-button').addEventListener('click', ha
 
 document.getElementById('add-clause-button').addEventListener('click', handleAddClauseButtonClick)
 
+function preloadClause() {
+  const container = document.getElementById('add-clauses-container');
+  if (!container.children.length) {
+    const container = document.getElementById('add-clauses-container');
 
+    const col1 = wrapInDiv(createInput('Enter destination address'), 'col-md-4');
+    const col2 = wrapInDiv(createInput('Enter amount'), 'col-md-2');
 
+    const row = document.createElement('div');
+    row.classList.add('clause-row', 'row');
+
+    row.appendChild(col1);
+    row.appendChild(col2);
+
+    container.appendChild(row);
+  }
+}
+
+preloadClause()
 
 // Helpers
 
